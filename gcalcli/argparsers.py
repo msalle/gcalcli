@@ -66,9 +66,10 @@ class DetailsAction(argparse._AppendAction):
 
 
 def validwidth(value):
+    minwidth=30
     ival = int(value)
-    if ival < 10:
-        raise argparse.ArgumentTypeError('Width must be a number >= 10')
+    if ival < minwidth:
+        raise argparse.ArgumentTypeError(f'Width must be a number >= {minwidth}')
     return ival
 
 
@@ -100,9 +101,7 @@ def locale_has_24_hours():
 
 
 def get_auto_width():
-    console_width = get_terminal_size().columns
-    day_width = int((console_width - 8) / 7)
-    return day_width if day_width > 9 else 10
+    return get_terminal_size().columns
 
 
 def get_output_parser(parents=[]):
@@ -116,9 +115,8 @@ def get_output_parser(parents=[]):
     output_parser.add_argument(
             '--nodeclined', action='store_true', dest='ignore_declined',
             default=False, help='Hide events that have been declined')
-    auto_width = get_auto_width()
     output_parser.add_argument(
-            '--width', '-w', default=auto_width, dest='cal_width',
+            '--width', '-w', default=get_auto_width(), dest='width',
             type=validwidth, help='Set output width')
     has_24_hours = locale_has_24_hours()
     output_parser.add_argument(
